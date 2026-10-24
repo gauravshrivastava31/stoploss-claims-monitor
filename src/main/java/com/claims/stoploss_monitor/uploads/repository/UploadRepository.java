@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface UploadRepository
         extends JpaRepository<Upload, UUID> {
+    boolean existsByFileName(String fileName);
+
 }

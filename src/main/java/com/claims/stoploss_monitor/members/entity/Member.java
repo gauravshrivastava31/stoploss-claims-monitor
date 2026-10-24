@@ -8,18 +8,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "members",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_member",
-                        columnNames = {
-                                "group_id",
-                                "member_id"
-                        }
-                )
-        }
-)
+@Table(name = "members")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,13 +17,13 @@ import java.util.UUID;
 public class Member {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @Column(name = "group_id", nullable = false)
+    private String groupId;
 
-    @Column(name = "member_id")
+    @Column(name = "member_id", nullable = false, unique = true)
     private String memberId;
 
     private String firstName;

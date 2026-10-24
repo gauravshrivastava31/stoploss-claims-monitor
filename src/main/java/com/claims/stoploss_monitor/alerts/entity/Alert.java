@@ -3,6 +3,7 @@ package com.claims.stoploss_monitor.alerts.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -19,15 +20,17 @@ public class Alert {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String groupId;
-
     private String memberId;
 
-    private String alertType;
+    private String groupId;
 
-    private String message;
+    private BigDecimal spend;
 
-    private boolean resolved;
+    private BigDecimal deductible;
+
+    private BigDecimal utilizationPercent;
+
+    private String alertLevel;
 
     private LocalDateTime createdAt;
 }

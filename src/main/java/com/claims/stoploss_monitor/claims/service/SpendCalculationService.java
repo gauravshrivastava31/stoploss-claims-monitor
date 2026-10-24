@@ -4,9 +4,7 @@ import java.math.BigDecimal;
 
 public interface SpendCalculationService {
 
-    BigDecimal calculateMemberSpend(
-            String groupId,
+    BigDecimal getMemberSpend(
             String memberId
     );
-
 }

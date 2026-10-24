@@ -11,16 +11,17 @@ import java.math.BigDecimal;
 public class SpendCalculationServiceImpl
         implements SpendCalculationService {
 
-    private final ClaimVersionRepository claimVersionRepository;
+    private final ClaimVersionRepository
+            claimVersionRepository;
 
     @Override
-    public BigDecimal calculateMemberSpend(
-            String groupId,
+    public BigDecimal getMemberSpend(
             String memberId
     ) {
 
-        // to be implemented after CSV import
-
-        return BigDecimal.ZERO;
+        return claimVersionRepository
+                .getTotalPaidAmountForMember(
+                        memberId
+                );
     }
 }

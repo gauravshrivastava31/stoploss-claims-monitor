@@ -24,11 +24,19 @@ CREATE TABLE claim_versions
 
     upload_id UUID NOT NULL,
 
+    adjustment_sequence INTEGER NOT NULL,
+
+    member_id VARCHAR(50) NOT NULL,
+
+    service_date DATE,
+
+    paid_date DATE,
+
     paid_amount NUMERIC(14,2) NOT NULL,
 
-    diagnosis_code VARCHAR(50),
+    status VARCHAR(50),
 
-    incurred_date DATE,
+    diagnosis_code VARCHAR(50),
 
     version_number INTEGER NOT NULL,
 
@@ -41,11 +49,20 @@ CREATE TABLE claim_versions
     CONSTRAINT fk_claim_version_upload
         FOREIGN KEY (upload_id)
         REFERENCES uploads(id)
+);
+CREATE TABLE alerts
+(
+    id UUID PRIMARY KEY,
 
-        ALTER TABLE claim_versions
-        ADD COLUMN adjustment_sequence INTEGER NOT NULL,
-        ADD COLUMN member_id VARCHAR(50) NOT NULL,
-        ADD COLUMN service_date DATE,
-        ADD COLUMN paid_date DATE,
-        ADD COLUMN status VARCHAR(50);
+    group_id VARCHAR(10),
+
+    member_id VARCHAR(50),
+
+    alert_type VARCHAR(100),
+
+    message VARCHAR(1000),
+
+    resolved BOOLEAN NOT NULL,
+
+    created_at TIMESTAMP
 );
