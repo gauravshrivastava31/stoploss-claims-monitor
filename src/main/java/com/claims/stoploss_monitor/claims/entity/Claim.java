@@ -18,12 +18,16 @@ public class Claim {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "claim_number", nullable = false, unique = true)
-    private String claimNumber;
+    @Column(name = "group_id")
+    private String groupId;
 
-    @Column(name = "member_id", nullable = false)
+    @Column(name = "member_id")
     private String memberId;
 
-    @Column(name = "group_id", nullable = false)
-    private String groupId;
+    @Column(
+            name = "claim_number",
+            nullable = false,
+            unique = true
+    )
+    private String claimNumber;
 }

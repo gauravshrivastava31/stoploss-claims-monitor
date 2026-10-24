@@ -41,4 +41,11 @@ CREATE TABLE claim_versions
     CONSTRAINT fk_claim_version_upload
         FOREIGN KEY (upload_id)
         REFERENCES uploads(id)
+
+        ALTER TABLE claim_versions
+        ADD COLUMN adjustment_sequence INTEGER NOT NULL,
+        ADD COLUMN member_id VARCHAR(50) NOT NULL,
+        ADD COLUMN service_date DATE,
+        ADD COLUMN paid_date DATE,
+        ADD COLUMN status VARCHAR(50);
 );

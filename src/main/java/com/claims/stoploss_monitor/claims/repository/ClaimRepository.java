@@ -9,5 +9,7 @@ import java.util.UUID;
 public interface ClaimRepository
         extends JpaRepository<Claim, UUID> {
 
-    Optional<Claim> findByClaimNumber(String claimNumber);
+    Optional<Claim> findByClaimNumber(
+            String claimNumber
+    );
 }
