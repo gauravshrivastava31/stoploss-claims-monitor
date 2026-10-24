@@ -1,0 +1,32 @@
+spring:
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/stoploss
+    username: postgres
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+  security:
+    user:
+     name: admin
+     password: admin123
