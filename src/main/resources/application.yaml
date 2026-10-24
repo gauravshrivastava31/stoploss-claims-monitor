@@ -8,6 +8,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+      jdbc:
+        batch_size: 50
+
+      order_inserts: true
+
+      order_updates: true
+    open-in-view: false
 
     show-sql: true
 
@@ -30,3 +37,5 @@ logging:
     user:
      name: admin
      password: admin123
+
+
