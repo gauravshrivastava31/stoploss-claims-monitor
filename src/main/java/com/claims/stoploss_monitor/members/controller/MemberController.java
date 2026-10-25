@@ -1,6 +1,7 @@
 package com.claims.stoploss_monitor.members.controller;
 
 import com.claims.stoploss_monitor.claims.service.SpendCalculationService;
+import com.claims.stoploss_monitor.exception.MemberNotFoundException;
 import com.claims.stoploss_monitor.lasers.entity.Laser;
 import com.claims.stoploss_monitor.lasers.repository.LaserRepository;
 import com.claims.stoploss_monitor.members.dto.MemberSummaryDto;
@@ -37,9 +38,8 @@ public class MemberController {
                 memberRepository
                         .findByMemberId(memberId)
                         .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Member not found: "
-                                                + memberId
+                                new MemberNotFoundException(
+                                        memberId
                                 )
                         );
 
