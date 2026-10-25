@@ -72,13 +72,13 @@ which produced:
 
 ```java
 List<Object>
-```
+
 
 instead of:
 
 ```java
 List<Object[]>
-```
+
 
 Detection:
 
@@ -184,6 +184,37 @@ The following features were implemented with AI assistance and then reviewed man
 - Project documentation
 
 ---
+## Additional AI-Assisted Activities
+
+AI assistance was also used during final validation and demo preparation.
+
+Activities included:
+
+- Architecture review
+- Security review
+- API walkthrough preparation
+- Postman test scenario creation
+- Broker authorization verification
+- Alert threshold validation
+- Demo script generation
+- Documentation review
+
+Examples:
+
+- Verifying member summary calculations against deductible thresholds
+- Reviewing alert generation behavior
+- Reviewing authentication and authorization flows
+- Creating positive and negative API test scenarios
+- Producing end-to-end demo walkthrough documentation
+
+All findings were validated manually against:
+
+- PostgreSQL data
+- Application logs
+- Postman results
+- Browser-based UI behavior
+
+No production source code changes were committed without manual review and verification.
 
 ## Estimated Effort
 

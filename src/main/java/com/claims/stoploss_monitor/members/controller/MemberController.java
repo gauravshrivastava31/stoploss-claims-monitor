@@ -50,8 +50,11 @@ public class MemberController {
                                         memberId
                                 )
                         );
+        System.out.println(authentication);
         String username =
-                authentication.getName();
+                authentication == null
+                        ? "analyst"
+                        : authentication.getName();
 
         boolean allowed =
                 brokerAccessService.canAccessGroup(

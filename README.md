@@ -14,7 +14,7 @@
 
 Files:
 
-```text
+
 Dockerfile
 docker-compose.yml
 ```
@@ -25,7 +25,7 @@ docker-compose.yml
 
 Terraform templates included:
 
-```text
+
 terraform/
  ├── main.tf
  ├── variables.tf

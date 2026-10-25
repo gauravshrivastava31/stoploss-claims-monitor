@@ -450,6 +450,102 @@ Approximately 1-2 days including:
 - additional integration tests
 ---
 
+# Decision 11: Alert Threshold Evaluation
+
+## Decision
+
+Alert severity is determined using deductible utilization percentages.
+
+Thresholds:
+
+
+50%  -> WARNING
+75%  -> HIGH
+100% -> CRITICAL
+
+## Why
+
+The business requirement focuses on identifying members approaching or exceeding stop-loss deductibles.
+
+Calculating alerts directly from current spend ensures:
+
+Real-time accuracy
+No stale alert records
+Simpler persistence model
+Easier reconciliation with claim adjustments
+Risks
+
+Alert calculations are re-evaluated whenever the alert API is called.
+
+As claim volumes grow significantly, repeated recalculation may increase response times.
+
+## Future Improvement
+
+Introduce:
+
+scheduled alert generation
+materialized alert snapshots
+incremental recalculation
+alert caching
+
+Estimated effort:
+1-2 days
+---
+# Decision 12: Simplified UI Demonstration Configuration
+## Decision
+
+The React dashboard currently uses unauthenticated access to selected read-only APIs during demonstration.
+
+Endpoints:
+
+Plain Text
+/api/dashboard/**
+/api/alerts/**
+/api/members/**
+/api/spend/**
+
+remain publicly accessible for UI evaluation.
+
+Protected operations continue to require authentication.
+
+Example:
+/api/claims/**
+
+## Why
+
+The frontend currently does not implement a dedicated login workflow.
+
+Allowing selected read-only APIs simplified:
+
+UI demonstrations
+reviewer testing
+dashboard validation
+
+while preserving authentication for write operations.
+
+# Risks
+
+This configuration should not be used in production.
+
+Read-only business data can be viewed without authentication.
+
+# Future Improvement:
+
+Restore full protection:
+/api/**
+authenticated()
+
+and implement:
+
+OAuth2
+OpenID Connect
+JWT tokens
+Frontend login workflow
+
+Estimated effort:
+1-2 days
+
+
 # Known Limitations
 
 1. Basic Authentication uses in-memory users.
@@ -458,6 +554,8 @@ Approximately 1-2 days including:
 4. Upload validation is intentionally lightweight.
 5. Infrastructure templates are starter implementations.
 6. Full administrator-supplied claim version semantics are simplified.
+7. Alert generation currently recalculates alerts dynamically rather than using persisted alert snapshots.
+8. React UI currently uses a simplified demonstration configuration and does not yet include an authenticated login workflow.
 
 ---
 
@@ -469,6 +567,7 @@ The implementation prioritizes:
 - claim versioning
 - spend calculation accuracy
 - broker data isolation
+- alert visibility
 - testability
 - maintainability
 
