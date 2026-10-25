@@ -39,6 +39,12 @@ function App() {
   };
 
   const searchMember = async () => {
+    if (!memberId.trim()) {
+      alert("Please enter a Member ID");
+
+      return;
+    }
+
     try {
       const response = await axios.get(
         `http://localhost:8080/api/members/${memberId}/summary`,
@@ -46,6 +52,8 @@ function App() {
 
       setSummary(response.data);
     } catch (error) {
+      setSummary(null);
+
       alert("Member not found");
     }
   };
