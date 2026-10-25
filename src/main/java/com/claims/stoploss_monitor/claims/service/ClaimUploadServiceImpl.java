@@ -105,12 +105,12 @@ public class ClaimUploadServiceImpl
                     );
 
             String line;
-
+            int rowNumber = 1;
             while (
                     (line = reader.readLine())
                             != null
             ) {
-
+                rowNumber++;
                 try {
 
                     String[] cols =
@@ -289,7 +289,12 @@ public class ClaimUploadServiceImpl
                 } catch (Exception ex) {
 
                     errors.add(
-                            ex.getMessage()
+                            "File: "
+                                    + file.getOriginalFilename()
+                                    + ", Row: "
+                                    + rowNumber
+                                    + ", Reason: "
+                                    + ex.getMessage()
                     );
                 }
             }
@@ -297,7 +302,10 @@ public class ClaimUploadServiceImpl
         } catch (Exception ex) {
 
             errors.add(
-                    ex.getMessage()
+                    "File: "
+                            + file.getOriginalFilename()
+                            + ", Reason: "
+                            + ex.getMessage()
             );
         }
 
