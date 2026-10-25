@@ -1,253 +1,412 @@
 # DECISIONS.md
 
-## Overview
+# Architecture and Trade-Off Decisions
 
-This document captures key design decisions, tradeoffs, assumptions, and shortcuts taken during implementation.
-
----
-
-## Technology Stack
-
-### Spring Boot
-
-Decision:
-Use Spring Boot for backend development.
-
-Reason:
-- Rapid development
-- Built-in REST support
-- Dependency Injection
-- JPA integration
-- Strong ecosystem
-
-Tradeoff:
-Slightly heavier than lightweight frameworks.
+This document explains the major design decisions made during implementation, why they were chosen, what risks they introduce, and possible future improvements.
 
 ---
 
-### PostgreSQL
+# Decision 1: Claim Versioning Instead of Updates
 
-Decision:
-Use PostgreSQL as the relational database.
+## Decision
 
-Reason:
-- Strong ACID guarantees
-- Excellent support for relational data
-- Suitable for insurance and healthcare domains
-- Supports foreign keys and constraints
+Claims are never updated in place.
 
-Tradeoff:
-Requires more administration than embedded databases.
+Every modification creates a new `ClaimVersion` record while the previous version is retained.
 
----
+Only a single version is marked:
 
-### Flyway
+```text
+is_latest = true
+```
 
-Decision:
-Use Flyway migrations.
-
-Reason:
-- Version-controlled database schema
-- Reproducible deployments
-- Easy onboarding
-
-Tradeoff:
-Additional migration management.
+at any given time.
 
 ---
 
-### React Dashboard
+## Why
 
-Decision:
-Create a lightweight React frontend.
+Stop-loss claim data is frequently adjusted by TPAs.
 
-Reason:
-- Modern UI framework
-- Separation of frontend and backend
-- Demonstrates full-stack capability
+An immutable version history provides:
 
-Tradeoff:
-Additional build process.
+- Auditability
+- Historical traceability
+- Recovery from incorrect updates
+- Regulatory transparency
 
 ---
 
-## Claim Versioning
+## Risks
 
-Decision:
-Store multiple versions of claims rather than overwriting existing records.
+Storage usage grows over time.
 
-Reason:
-Insurance claims may be adjusted over time.
-
-Benefits:
-- Auditable history
-- Data lineage
-- Historical analysis
-
-Tradeoff:
-More storage required.
+Queries become slightly more complex because only latest versions should be used for calculations.
 
 ---
 
-## Alert Thresholds
+## Future Improvement
 
-Decision:
-Implemented utilization-based alerts.
+Archive very old versions into lower-cost storage when retention requirements permit.
 
-Initial implementation:
-- WARNING = 80%
-- HIGH = 90%
-- CRITICAL = 100%
+Estimated effort:
 
-Assignment Requirement:
-- WARNING = 50%
-- HIGH = 75%
-- CRITICAL = 100%
-
-Action:
-Thresholds should be aligned with assignment rules before final submission.
+~1 day
 
 ---
 
-# Shortcuts
+# Decision 2: Aggregations Use Only Latest Claim Versions
 
-## Authentication and Authorization
+## Decision
 
-Shortcut:
-Roles not fully implemented initially.
+All spend calculations operate only on:
 
-Risk:
-Cannot enforce broker data isolation.
+```text
+is_latest = true
+```
 
-Fix Cost:
-Medium (~4-6 hours).
-
----
-
-## File Upload API
-
-Shortcut:
-CSV files imported through startup services.
-
-Risk:
-Analysts cannot upload files through UI/API.
-
-Fix Cost:
-Medium (~6-8 hours).
+claim versions.
 
 ---
 
-## Alert Acknowledgement
+## Why
 
-Shortcut:
-Read-only alert viewing.
+Historical claim versions should not contribute to current spend totals.
 
-Risk:
-No workflow management.
-
-Fix Cost:
-Low (~2 hours).
+Using only the latest version ensures calculations reflect the most recent TPA adjustments.
 
 ---
 
-## Docker
+## Risks
 
-Shortcut:
-Application runs locally without containerization.
-
-Risk:
-Deployment setup not standardized.
-
-Fix Cost:
-Low (~1 hour).
+A bug that incorrectly marks versions as latest can affect calculations.
 
 ---
 
-## Terraform
+## Future Improvement
 
-Shortcut:
-Infrastructure code not yet implemented.
+Add database constraints and automated validation jobs to verify only one latest version exists per claim.
 
-Risk:
-Deployment not automated.
+Estimated effort:
 
-Fix Cost:
-Low (~2 hours using AI-generated templates).
+~4 hours
 
-## Claim Upload API
-Shortcut:
-Current State
+---
 
-Claims are imported through startup data-loading services rather than a dedicated upload API.
+# Decision 3: Basic Authentication
 
-Why This Is Acceptable For Now
+## Decision
 
-The primary focus was implementing claim versioning, spend calculations,
-alerts, authorization, API design, testing, and the React dashboard.
+Spring Security HTTP Basic Authentication was used.
 
-What Could Go Wrong
+Roles:
 
-Analysts cannot upload new claim files without restarting the application.
+```text
+ROLE_ANALYST
+ROLE_BROKER
+```
 
-This limits operational usability and prevents self-service file ingestion.
+---
 
-What Would Tell Us To Fix It
+## Why
 
-Need for recurring claim ingestion.
+Provides a secure and simple solution appropriate for the assignment scope.
 
-Need for analyst self-service uploads.
+Minimizes implementation complexity while enabling role-based access control.
 
-Need to support multiple monthly claim files without application restarts.
+---
 
-Proposed Fix
+## Risks
+
+Not suitable for internet-facing production systems.
+
+Credentials are static and in-memory.
+
+---
+
+## Future Improvement
+
+Replace with:
+
+- OAuth2
+- OpenID Connect
+- Azure AD / Entra ID
+
+Estimated effort:
+
+~1-2 days
+
+---
+
+# Decision 4: Broker Data Isolation
+
+## Decision
+
+Broker users are restricted to their assigned groups.
+
+Example:
+
+```text
+brokerA -> GA
+
+brokerB -> GB
+```
+
+Analysts can access all groups.
+
+---
+
+## Why
+
+The assignment explicitly requires broker-level data isolation.
+
+This prevents data leakage between employer groups.
+
+---
+
+## Risks
+
+Current mapping is static and hardcoded.
+
+New brokers require code changes.
+
+---
+
+## Future Improvement
+
+Persist broker-to-group mappings in the database and manage them administratively.
+
+Estimated effort:
+
+~1 day
+
+---
+
+# Decision 5: Alert Acknowledgement Persistence
+
+## Decision
+
+Alert acknowledgements are stored separately with:
+
+- memberId
+- note
+- acknowledgedBy
+- acknowledgedAt
+
+---
+
+## Why
+
+Creates an audit trail of analyst review activity.
+
+Allows future workflow expansion.
+
+---
+
+## Risks
+
+Acknowledged alerts are not currently hidden or resolved automatically.
+
+---
+
+## Future Improvement
 
 Implement:
 
-POST /api/claims/upload
+- alert status lifecycle
+- resolved state
+- comments
+- audit history
 
-using MultipartFile and OpenCSV.
+Estimated effort:
 
-Return:
+~1 day
 
-- processed rows
-- failed rows
-- validation errors
+---
 
-and support both administrator claim layouts.
+# Decision 6: Duplicate Upload Detection
 
-Estimated Cost
+## Decision
 
-Approximately 6-10 hours including validation, duplicate-upload detection,
-error reporting and automated tests.
+Duplicate claim file uploads are detected using:
 
-## Alert Acknowledgement
-Shortcut:
-Current State
+```text
+file_name
+```
 
-Alerts are generated and displayed but are not currently acknowledged by analysts.
+stored in the uploads table.
 
-Why This Is Acceptable For Now
+---
 
-The business rules for generating alerts are implemented and working.
+## Why
 
-What Could Go Wrong
+Simple implementation that satisfies idempotency requirements.
 
-Repeated review of the same alert.
+Prevents accidental re-processing of identical uploads.
 
-No audit trail of alert review activity.
+---
 
-What Would Tell Us To Fix It
+## Risks
 
-Operational users begin managing alerts daily and require tracking.
+Renaming a file allows duplicate content to bypass detection.
 
-Proposed Fix
+Example:
 
-Add:
+```text
+claims_june.csv
+claims_june_copy.csv
+```
 
-POST /api/alerts/{id}/acknowledge
+---
 
-with analyst notes and audit timestamps.
+## Future Improvement
 
-Estimated Cost
+Store SHA-256 checksums of uploaded files and compare hashes instead of filenames.
 
-2-4 hours.
+Estimated effort:
+
+~4 hours
+
+---
+
+# Decision 7: Support For Multiple TPA Layouts
+
+## Decision
+
+The upload service detects the claim file layout using CSV headers and parses accordingly.
+
+Supported formats:
+
+### TPA One
+
+```csv
+Claim ID,Adj Seq,Member ID,...
+```
+
+### TPA Two
+
+```csv
+claim_number,version,member,...
+```
+
+---
+
+## Why
+
+The assignment requires support for multiple administrator file formats.
+
+---
+
+## Risks
+
+Future file format changes may break parsing.
+
+---
+
+## Future Improvement
+
+Introduce:
+
+- schema version detection
+- configurable mappings
+- validation framework
+
+Estimated effort:
+
+~1-2 days
+
+---
+
+# Decision 8: Monolithic Architecture
+
+## Decision
+
+The solution uses a single Spring Boot application.
+
+---
+
+## Why
+
+Provides faster development, simpler deployment and lower operational overhead.
+
+Appropriate for assignment scope.
+
+---
+
+## Risks
+
+Future scaling may require service decomposition.
+
+---
+
+## Future Improvement
+
+Separate workloads into:
+
+- Claims Service
+- Upload Service
+- Alert Service
+
+Estimated effort:
+
+~3-5 days
+
+---
+
+# Decision 9: Infrastructure Skeletons
+
+## Decision
+
+Docker, GitHub Actions and Terraform were implemented as starter templates rather than production-ready infrastructure.
+
+---
+
+## Why
+
+The assignment focuses on application functionality and allows AI-assisted infrastructure generation.
+
+---
+
+## Risks
+
+Additional work would be required before production deployment.
+
+---
+
+## Future Improvement
+
+Enhance:
+
+- Terraform modules
+- remote state management
+- CI/CD release pipelines
+- environment-specific deployments
+
+Estimated effort:
+
+~2-3 days
+
+---
+
+# Known Limitations
+
+1. Basic Authentication uses in-memory users.
+2. Duplicate upload detection relies on file names rather than content hashes.
+3. Alert lifecycle is limited to acknowledgements.
+4. Upload validation is intentionally lightweight.
+5. Infrastructure templates are starter implementations.
+
+---
+
+# Summary
+
+The implementation prioritizes:
+
+- correctness of business rules
+- claim versioning
+- spend calculation accuracy
+- broker data isolation
+- testability
+- maintainability
+
+while keeping operational complexity appropriate for the scope of the assignment.

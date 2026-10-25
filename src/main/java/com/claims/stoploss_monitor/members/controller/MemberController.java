@@ -10,6 +10,7 @@ import com.claims.stoploss_monitor.members.repository.MemberRepository;
 import com.claims.stoploss_monitor.policies.entity.PolicyYear;
 import com.claims.stoploss_monitor.policies.repository.PolicyYearRepository;
 import com.claims.stoploss_monitor.security.BrokerAccessService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "basicAuth")
 public class MemberController {
 
     private final SpendCalculationService spendCalculationService;

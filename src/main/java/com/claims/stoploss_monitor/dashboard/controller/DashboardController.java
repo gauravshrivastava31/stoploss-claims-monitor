@@ -4,12 +4,14 @@ import com.claims.stoploss_monitor.dashboard.dto.DashboardStatsDto;
 import com.claims.stoploss_monitor.groups.repository.GroupRepository;
 import com.claims.stoploss_monitor.lasers.repository.LaserRepository;
 import com.claims.stoploss_monitor.members.repository.MemberRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "basicAuth")
 public class DashboardController {
 
     private final GroupRepository groupRepository;

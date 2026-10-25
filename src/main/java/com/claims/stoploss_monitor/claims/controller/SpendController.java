@@ -1,6 +1,7 @@
 package com.claims.stoploss_monitor.claims.controller;
 
 import com.claims.stoploss_monitor.claims.service.SpendCalculationService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
 @RequestMapping("/api/spend")
 @RequiredArgsConstructor
 @Tag(name = "Spend APIs")
-
+@SecurityRequirement(name = "basicAuth")
 public class SpendController {
 
     private final SpendCalculationService

@@ -1,55 +1,74 @@
 # AI.md
 
+# AI Usage Report
+
 ## AI Tools Used
+
+The following AI tools were used throughout development:
 
 - Microsoft Copilot
 - ChatGPT
-- IntelliJ AI Assistance
+- IntelliJ AI Assistant
 
 ---
 
 ## Development Workflow
 
-AI was used to:
+AI was used to accelerate implementation, troubleshooting, infrastructure setup and documentation generation.
 
-- Generate entity classes
-- Generate repository interfaces
-- Generate Flyway migration scripts
-- Build REST controllers
-- Generate service implementations
-- Create React dashboard
-- Generate unit tests
-- Produce documentation
+AI-assisted areas included:
+
+- Entity generation
+- Repository generation
+- REST API implementation
+- Flyway migration generation
+- React dashboard components
+- Spring Security configuration
+- Broker authorization implementation
+- Claim upload workflow
+- Claim versioning logic
+- Alert generation workflow
+- Alert acknowledgement workflow
+- Unit test generation
+- Dockerfile creation
+- Docker Compose configuration
+- GitHub Actions workflow
+- Terraform templates
+- Documentation authoring
+
+All generated code was reviewed, modified, tested and validated before being committed.
 
 ---
 
 ## Three Cases Where AI Was Wrong
 
-### Case 1
+### Case 1 – Repository Method Generation
 
 Issue:
-AI suggested repository code with incorrect method names.
+
+AI suggested repository methods that did not match actual entity relationships.
 
 Detection:
-Compilation failure.
+
+Compilation failures during Maven build.
 
 Resolution:
-Compared repository interface methods against implementation.
+
+Reviewed entity mappings and manually corrected repository methods and relationship traversal.
 
 ---
 
-### Case 2
+### Case 2 – Mockito Collection Typing
 
 Issue:
-AI generated incorrect Mockito test list typing.
 
-Example:
+AI suggested:
 
 ```java
 List.of(spendRow)
 ```
 
-returned:
+which produced:
 
 ```java
 List<Object>
@@ -62,58 +81,138 @@ List<Object[]>
 ```
 
 Detection:
-Compilation error.
+
+Compilation failure in unit tests.
 
 Resolution:
-Explicitly declared List<Object[]>.
+
+Explicitly created typed collections using:
+
+```java
+List<Object[]> spendData =
+        new ArrayList<>();
+```
 
 ---
 
-### Case 3
+### Case 3 – Security Configuration Conflict
 
 Issue:
-React validation did not handle blank member IDs.
+
+AI-generated security configuration conflicted with an existing SecurityConfig class, causing duplicate bean definitions.
 
 Detection:
-Functional testing.
+
+Application startup failure with bean registration conflicts.
 
 Resolution:
-Added client-side validation before API call.
+
+Reviewed startup logs, removed duplicate configuration and consolidated security settings into a single implementation.
+
+---
+
+## Human Validation Performed
+
+The following activities were performed manually:
+
+- Maven compilation verification
+- Integration testing
+- Security validation
+- Authorization testing
+- Database verification
+- API validation via Postman
+- React dashboard testing
+- Upload workflow testing
+- Claim versioning verification
+- Swagger verification
+
+Generated code was never accepted without review and validation.
 
 ---
 
 ## Tasks Not Delegated Fully To AI
 
-### Business Analysis
+### Business Rule Validation
 
-Reason:
-Human review was required to interpret stop-loss insurance concepts and verify behavior.
+AI generated implementation suggestions, but business rules were validated manually.
 
-### Testing
+Examples:
 
-Reason:
-All generated code was executed and validated manually.
-
-### Final Design Decisions
-
-Reason:
-Required human judgment around architecture and tradeoffs.
+- Stop-loss deductible calculations
+- Alert threshold definitions
+- Broker access restrictions
+- Claim versioning behavior
 
 ---
 
-## Estimated Time
+### Testing and Verification
 
-Backend:
-~12 hours
+AI generated test scaffolding, but all workflows were manually executed and verified against PostgreSQL and application behavior.
 
-Frontend:
-~3 hours
+---
 
-Testing:
-~2 hours
+### Architectural Decisions
 
-Documentation:
-~2 hours
+Final architectural decisions were made manually, including:
 
-Total:
-~19 hours
+- Claim versioning approach
+- Broker data isolation
+- Security strategy
+- Upload deduplication strategy
+- Alert acknowledgement workflow
+
+---
+
+## Significant AI-Assisted Deliverables
+
+The following features were implemented with AI assistance and then reviewed manually:
+
+- Authentication and authorization
+- Broker access control
+- Access-control testing
+- Claim versioning
+- Spend calculations
+- Alert generation
+- Alert acknowledgement
+- Claim upload API
+- Duplicate upload prevention
+- React dashboard
+- Docker configuration
+- GitHub Actions CI pipeline
+- Terraform templates
+- Flyway migrations
+- Project documentation
+
+---
+
+## Estimated Effort
+
+### Backend
+
+Approximately 12 hours
+
+### Frontend
+
+Approximately 3 hours
+
+### Testing and Validation
+
+Approximately 3 hours
+
+### Documentation and Infrastructure
+
+Approximately 2 hours
+
+### Total
+
+Approximately 20 hours
+
+---
+
+## Reflection
+
+AI significantly accelerated routine development tasks, infrastructure setup and documentation generation.
+
+The greatest value came from reducing boilerplate implementation effort, allowing more time to focus on business logic, validation, security, testing and architectural decisions.
+
+The final application combines AI-assisted development with manual review, testing and validation to ensure correctness and maintainability.
