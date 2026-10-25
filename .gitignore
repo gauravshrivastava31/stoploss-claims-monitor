@@ -22,3 +22,5 @@ Thumbs.db
 # Node (for future React frontend)
 node_modules/
 dist/
+frontend/stoploss-ui/node_modules/
+frontend/stoploss-ui/dist/
