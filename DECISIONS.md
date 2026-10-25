@@ -386,6 +386,68 @@ Estimated effort:
 
 ~2-3 days
 
+# Decision 10: Claim Version Processing
+
+## Decision
+
+Claim history is stored using immutable ClaimVersion records.
+
+Only the latest version contributes to spend calculations.
+
+---
+
+## Why
+
+The approach provides:
+
+- Auditability
+- Historical traceability
+- Simpler spend calculations
+- Easier debugging
+
+while keeping the core implementation manageable within the assignment time box.
+
+---
+
+## Shortcut Taken
+
+The application currently tracks claim versions internally once claims are ingested.
+
+The following administrator-specific version semantics are simplified:
+
+- Older administrator versions arriving after newer ones are not explicitly rejected.
+- Duplicate administrator versions with conflicting values are not detected as errors.
+- Voided and reversed claims are not processed using dedicated business rules.
+
+---
+
+## What Could Go Wrong
+
+External claim administrators could provide:
+
+- out-of-order versions
+- conflicting duplicate versions
+- reversal records
+
+that would require additional validation logic.
+
+---
+
+## When To Fix
+
+Before onboarding production claim feeds from third-party administrators.
+
+---
+
+## Estimated Fix Cost
+
+Approximately 1-2 days including:
+
+- schema changes
+- ingestion rule enhancements
+- duplicate conflict detection
+- reversal processing logic
+- additional integration tests
 ---
 
 # Known Limitations
@@ -395,6 +457,7 @@ Estimated effort:
 3. Alert lifecycle is limited to acknowledgements.
 4. Upload validation is intentionally lightweight.
 5. Infrastructure templates are starter implementations.
+6. Full administrator-supplied claim version semantics are simplified.
 
 ---
 
