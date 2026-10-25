@@ -173,3 +173,81 @@ Deployment not automated.
 
 Fix Cost:
 Low (~2 hours using AI-generated templates).
+
+## Claim Upload API
+Shortcut:
+Current State
+
+Claims are imported through startup data-loading services rather than a dedicated upload API.
+
+Why This Is Acceptable For Now
+
+The primary focus was implementing claim versioning, spend calculations,
+alerts, authorization, API design, testing, and the React dashboard.
+
+What Could Go Wrong
+
+Analysts cannot upload new claim files without restarting the application.
+
+This limits operational usability and prevents self-service file ingestion.
+
+What Would Tell Us To Fix It
+
+Need for recurring claim ingestion.
+
+Need for analyst self-service uploads.
+
+Need to support multiple monthly claim files without application restarts.
+
+Proposed Fix
+
+Implement:
+
+POST /api/claims/upload
+
+using MultipartFile and OpenCSV.
+
+Return:
+
+- processed rows
+- failed rows
+- validation errors
+
+and support both administrator claim layouts.
+
+Estimated Cost
+
+Approximately 6-10 hours including validation, duplicate-upload detection,
+error reporting and automated tests.
+
+## Alert Acknowledgement
+Shortcut:
+Current State
+
+Alerts are generated and displayed but are not currently acknowledged by analysts.
+
+Why This Is Acceptable For Now
+
+The business rules for generating alerts are implemented and working.
+
+What Could Go Wrong
+
+Repeated review of the same alert.
+
+No audit trail of alert review activity.
+
+What Would Tell Us To Fix It
+
+Operational users begin managing alerts daily and require tracking.
+
+Proposed Fix
+
+Add:
+
+POST /api/alerts/{id}/acknowledge
+
+with analyst notes and audit timestamps.
+
+Estimated Cost
+
+2-4 hours.

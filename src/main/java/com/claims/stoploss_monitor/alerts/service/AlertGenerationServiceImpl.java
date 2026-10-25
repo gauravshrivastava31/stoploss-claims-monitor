@@ -92,18 +92,17 @@ public class AlertGenerationServiceImpl
                 level = "CRITICAL";
 
             } else if (utilization.compareTo(
-                    BigDecimal.valueOf(90))
+                    BigDecimal.valueOf(75))
                     >= 0) {
 
                 level = "HIGH";
 
             } else if (utilization.compareTo(
-                    BigDecimal.valueOf(80))
+                    BigDecimal.valueOf(50))
                     >= 0) {
 
                 level = "WARNING";
             }
-
             if (level != null) {
 
                 alerts.add(

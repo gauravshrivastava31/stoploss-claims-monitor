@@ -9,7 +9,10 @@ import com.claims.stoploss_monitor.members.entity.Member;
 import com.claims.stoploss_monitor.members.repository.MemberRepository;
 import com.claims.stoploss_monitor.policies.entity.PolicyYear;
 import com.claims.stoploss_monitor.policies.repository.PolicyYearRepository;
+import com.claims.stoploss_monitor.security.BrokerAccessService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -23,6 +26,8 @@ public class MemberController {
 
     private final SpendCalculationService spendCalculationService;
 
+    private final BrokerAccessService brokerAccessService;
+
     private final MemberRepository memberRepository;
 
     private final LaserRepository laserRepository;
@@ -31,7 +36,8 @@ public class MemberController {
 
     @GetMapping("/{memberId}/summary")
     public MemberSummaryDto getSummary(
-            @PathVariable String memberId
+            @PathVariable String memberId,
+            Authentication authentication
     ) {
 
         Member member =
@@ -42,6 +48,22 @@ public class MemberController {
                                         memberId
                                 )
                         );
+        String username =
+                authentication.getName();
+
+        boolean allowed =
+                brokerAccessService.canAccessGroup(
+                        username,
+                        member.getGroupId()
+                );
+
+        if (!allowed) {
+
+            throw new AccessDeniedException(
+                    "Access denied to group "
+                            + member.getGroupId()
+            );
+        }
 
         BigDecimal spend =
                 spendCalculationService
@@ -91,18 +113,17 @@ public class MemberController {
             alertLevel = "CRITICAL";
 
         } else if (utilization.compareTo(
-                BigDecimal.valueOf(90)
+                BigDecimal.valueOf(75)
         ) >= 0) {
 
             alertLevel = "HIGH";
 
         } else if (utilization.compareTo(
-                BigDecimal.valueOf(80)
+                BigDecimal.valueOf(50)
         ) >= 0) {
 
             alertLevel = "WARNING";
         }
-
         return MemberSummaryDto
                 .builder()
                 .memberId(memberId)
